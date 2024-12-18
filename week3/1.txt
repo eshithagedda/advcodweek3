@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int compare(const void *a, const void *b) {
+    return (*(int *)b - *(int *)a);
+}
+
+int findKthLargest(int *nums, int numsSize, int k) {
+    qsort(nums, numsSize, sizeof(int), compare);
+    return nums[k - 1];
+}
+
+int main() {
+    int numsSize, k;
+    printf("Enter the number of elements in the array: ");
+    scanf("%d", &numsSize);
+    int *nums = (int *)malloc(numsSize * sizeof(int));
+    if (nums == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+    printf("Enter the elements of the array:\n");
+    for (int i = 0; i < numsSize; i++) {
+        scanf("%d", &nums[i]);
+    }
+    printf("Enter the value of k: ");
+    scanf("%d", &k);
+    if (k < 1 || k > numsSize) {
+        printf("Invalid value of k. Please enter a value between 1 and %d.\n", numsSize);
+        free(nums);
+        return 1;
+    }
+    int result = findKthLargest(nums, numsSize, k);
+    printf("The %dth largest element is: %d\n", k, result);
+    free(nums);
+    return 0;
+}

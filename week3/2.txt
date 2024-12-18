@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct ListNode {
+    int val;
+    struct ListNode *next;
+};
+struct ListNode *mergeTwoLists(struct ListNode *l1, struct ListNode *l2) {
+    if (!l1) return l2;
+    if (!l2) return l1;
+
+    if (l1->val < l2->val) {
+        l1->next = mergeTwoLists(l1->next, l2);
+        return l1;
+    } else {
+        l2->next = mergeTwoLists(l1, l2->next);
+        return l2;
+    }
+}
+struct ListNode *mergeKLists(struct ListNode **lists, int listsSize) {
+    if (listsSize == 0) return NULL;
+    if (listsSize == 1) return lists[0];
+
+    int mid = listsSize / 2;
+
+    struct ListNode *left = mergeKLists(lists, mid);
+    struct ListNode *right = mergeKLists(lists + mid, listsSize - mid);
+    return mergeTwoLists(left, right);
+}
+
+struct ListNode *createNode(int val) {
+    struct ListNode *node = (struct ListNode *)malloc(sizeof(struct ListNode));
+    node->val = val;
+    node->next = NULL;
+    return node;
+}
+
+void printList(struct ListNode *head) {
+    while (head) {
+        printf("%d -> ", head->val);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    int k;
+    printf("Enter the number of linked lists: ");
+    scanf("%d", &k);
+
+    struct ListNode **lists = (struct ListNode **)malloc(k * sizeof(struct ListNode *));
+    for (int i = 0; i < k; i++) {
+        printf("Enter the number of elements in list %d: ", i + 1);
+        int n;
+        scanf("%d", &n);
+
+        struct ListNode *head = NULL, *tail = NULL;
+        printf("Enter the elements in sorted order:\n");
+        for (int j = 0; j < n; j++) {
+            int val;
+            scanf("%d", &val);
+            struct ListNode *newNode = createNode(val);
+            if (!head) {
+                head = tail = newNode;
+            } else {
+                tail->next = newNode;
+                tail = newNode;
+            }
+        }
+        lists[i] = head;
+    }
+    struct ListNode *mergedList = mergeKLists(lists, k);
+    printf("Merged Sorted List:\n");
+    printList(mergedList);
+    free(lists);
+    while (mergedList) {
+        struct ListNode *temp = mergedList;
+        mergedList = mergedList->next;
+        free(temp);
+    }
+
+    return 0;
+}
